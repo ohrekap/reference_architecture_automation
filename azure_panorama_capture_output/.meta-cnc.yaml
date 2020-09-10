@@ -1,6 +1,6 @@
-name: Capture Output for IP
+name: Capture Output for IP in Azure
 
-label: Capture Panorama IP
+label: Capture Panorama IP in Azure
 
 description: |
   Capture the Panorama IP details from Terraform
@@ -9,18 +9,10 @@ type: python3
 
 labels:
   collection:
-    - AWS Reference Architecture Skillet Modules
+    - Azure Reference Architecture Skillet Modules
 
 # These two hidden variables are passed to the Python script and ultimately to Terraform
 variables:
-  - name: AWS_ACCESS_KEY_ID
-    description: ID
-    default:
-    type_hint: hidden
-  - name: AWS_SECRET_ACCESS_KEY
-    description: Secret
-    default:
-    type_hint: hidden
 
 # This uses output capturing to get values from the output and set them in the users session. Each subsequent skillet
 # will have access to the captured_username and captured_secret variables from below.

@@ -1,0 +1,157 @@
+name: TransitVNet on Azure
+
+label: Deploy Azure Transit VNet
+
+description: |
+  Deploy the Azure Transit VNet Design Model
+
+type: python3
+
+labels:
+  collection:
+    - Azure Reference Architecture Skillet Modules
+
+variables:
+  - name: DEPLOYMENT_NAME
+    description: Prefix for deployment
+    default: ""
+    type_hint: hidden
+  - name: PASSWORD
+    description: Password for the admin account
+    default:
+    type_hint: hidden
+  - name: Panorama_IP
+    description: Panorama IP
+    default:
+    type_hint: hidden
+  - name: AZURE_REGION
+    description: What Azure region do you want to deploy into?
+    type_hint: dropdown
+    dd_list:
+      - key: '(US) Central US'
+        value: 'centralus'
+      - key: '(US) East US'
+        value: 'eastus'
+      - key: '(US) East US 2'
+        value: 'eastus2'
+      - key: '(US) North Central US'
+        value: 'northcentralus'
+      - key: '(US) South Central US'
+        value: 'southcentralus'
+      - key: '(US) West US'
+        value: 'westus'
+      - key: '(US) West US 2'
+        value: 'westus2'
+      - key: '(US) West Central US'
+        value: 'westcentralus'
+      - key: '(Canada) Canada Central'
+        value: 'canadacentral'
+      - key: '(Canada) Canada East'
+        value: 'canadaeast'
+      - key: '(South America) Brazil South'
+        value: 'brazilsouth'
+      - key: '(Europe) France Central'
+        value: 'francecentral'
+      - key: '(Europe) France South'
+        value: 'francesouth'
+      - key: '(Europe) Germany North'
+        value: 'germanynorth'
+      - key: '(Europe) Germany West Central'
+        value: 'germanywestcentral'
+      - key: '(Europe) North Europe'
+        value: 'northeurope'
+      - key: '(Europe) Norway East'
+        value: 'norwayeast'
+      - key: '(Europe) Norway West'
+        value: 'norwaywest'
+      - key: '(Europe) Switzerland North'
+        value: 'switzerlandnorth'
+      - key: '(Europe) Switzerland West'
+        value: 'switzerlandwest'
+      - key: '(Europe) UK South'
+        value: 'uksouth'
+      - key: '(Europe) UK West'
+        value: 'ukwest'
+      - key: '(Europe) West Europe'
+        value: 'westeurope'
+      - key: '(Middle East) UAE Central'
+        value: 'uaecentral'
+      - key: '(Middle East) UAE North'
+        value: 'uaenorth'
+      - key: '(Africa) South Africa North'
+        value: 'southafricanorth'
+      - key: '(Africa) South Africa West'
+        value: 'southafricawest '
+      - key: '(Asia Pacific) Australia East'
+        value: 'australiaeast'
+      - key: '(Asia Pacific) Southeast Asia'
+        value: 'southeastasia'
+      - key: '(Asia Pacific) Central India'
+        value: 'centralindia'
+      - key: '(Asia Pacific) South India'
+        value: 'southindia'
+      - key: '(Asia Pacific) West India'
+        value: 'westindia'
+      - key: '(Asia Pacific) East Asia'
+        value: 'eastasia'
+      - key: '(Asia Pacific) Japan East'
+        value: 'japaneast'
+      - key: '(Asia Pacific) Japan West'
+        value: 'japanwest'
+      - key: '(Asia Pacific) Korea Central'
+        value: 'koreacentral'
+      - key: '(Asia Pacific) Korea South'
+        value: 'koreasouth'
+      - key: '(Asia Pacific) Australia Central'
+        value: 'australiacentral'
+      - key: '(Asia Pacific) Australia Central 2'
+        value: 'australiacentral2'
+      - key: '(Asia Pacific) Australia Southeast'
+        value: 'australiasoutheast'
+  - name: transit_cidr_block
+    description: CIDR block for the VPC. Code supports a /16 mask through /29
+    default: 10.110.0.0/16
+    type_hint: cidr
+  - name: specify_network
+    description: Do you want to define the network you will access the VM-Series from manually?
+    type_hint: dropdown
+    dd_list:
+      - key: 'No: auto-discover my IP address'
+        value: 'auto'
+      - key: 'Yes: define the network and mask manually'
+        value: 'manual'
+  - name: onprem_cidr_block
+    description: The network and mask (ex:/24) you will access the VM-Series from
+    type_hint: cidr
+    toggle_hint:
+      source: specify_network
+      value: 'manual' 
+  - name: authcode
+    description: Authcode for the VM-Series firewall license
+    type_hint: text
+  #- name: vpn_peer
+  #  description: IP address of the on-premises peer for the IPsec connection
+  #  type_hint: fqdn_or_ip
+  #- name: vpn_psk
+  #  description: Pre-shared key for the IPsec connection
+  #  type_hint: text
+  #- name: vpn_as
+  #  description: BGP AS number of the on-premises peer
+  #  type_hint: number
+  - name: Init
+    description: Deploy or destroy the environment
+    default: ip_address
+    type_hint: dropdown
+    dd_list:
+      - key: 'Deploy'
+        value: "apply"
+      - key: 'Destroy'
+        value: 'destroy'
+
+snippets:
+  - name: script
+    file: deploy_transit.py
+    input_type: env
+
+
+

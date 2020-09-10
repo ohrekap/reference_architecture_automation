@@ -1,25 +1,17 @@
-name: Application on AWS
+name: Inbound AppGw on Azure
 
-label: Deploy an Example Application into the AWS Single VPC
+label: Deploy Azure Inbound Security with an Application Gateway
 
 description: |
-  Deploy the Application
+  Deploy Inbound security with an AppGW in the Azure Transit VNet Design Model
 
 type: python3
 
 labels:
   collection:
-    - AWS Reference Architecture Skillet Modules
+    - Azure Reference Architecture Skillet Modules
 
 variables:
-  - name: AWS_ACCESS_KEY_ID
-    description: ID
-    default: 
-    type_hint: hidden
-  - name: AWS_SECRET_ACCESS_KEY
-    description: Secret
-    default:
-    type_hint: hidden
   - name: DEPLOYMENT_NAME
     description: Prefix for deployment
     default: ""
@@ -32,9 +24,9 @@ variables:
     description: Panorama IP
     default:
     type_hint: hidden
-  - name: AWS_REGION
-    description: What AWS region do you want to deploy into?
-    type_hint: hidden
+  - name: authcode
+    description: Authcode for the VM-Series firewall license
+    type_hint: text
   - name: Init
     description: Deploy or destroy the environment
     default: ip_address
@@ -47,7 +39,7 @@ variables:
 
 snippets:
   - name: script
-    file: deploy_application.py
+    file: deploy_appgw.py
     input_type: env
 
 

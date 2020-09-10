@@ -9,7 +9,7 @@ type: python3
 
 labels:
   collection:
-    - Reference Architecture Skillet Modules
+    - AWS Reference Architecture Skillet Modules
 
 variables:
   - name: AWS_ACCESS_KEY_ID

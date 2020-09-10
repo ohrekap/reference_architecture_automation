@@ -1,0 +1,122 @@
+---
+- name: Primary Panorama OTP and HA
+  hosts: primary-panorama
+  connection: local
+  gather_facts: False
+
+  collections:
+    - paloaltonetworks.panos
+
+  tasks:
+  - name: Authorize plugin with OTP
+    panos_op: 
+      provider:
+        ip_address: '{{ ip_address }}'
+        username: 'refarchadmin'
+        password: '{{ password }}'
+      cmd: "{{'request plugins cloud_services panorama-certificate fetch otp ' + primary_otp }}"
+    register: result
+    failed_when: (result.stdout | from_json)['response']['result']['status'] != "Success"
+    when: primary_otp|length > 0
+  - name: Configure high-availability
+    panos_type_cmd:
+      provider:
+        ip_address: '{{ ip_address }}'
+        username: 'refarchadmin'
+        password: '{{ password }}'
+      xpath: | 
+          /config/devices/entry[@name="localhost.localdomain"]/deviceconfig/high-availability
+      element: |
+          <peer>
+            <ip-address>{{ peer }}</ip-address>
+          </peer>
+          <enabled>yes</enabled>
+          <election-option>
+            <priority>primary</priority>
+          </election-option>
+
+
+- name: Secondary Panorama OTP and HA
+  hosts: secondary-panorama
+  connection: local
+  gather_facts: False
+
+  collections:
+    - paloaltonetworks.panos
+
+  tasks:
+  - name: Authorize plugin with OTP
+    panos_op: 
+      provider:
+        ip_address: '{{ ip_address }}'
+        username: 'refarchadmin'
+        password: '{{ password }}'
+      cmd: "{{'request plugins cloud_services panorama-certificate fetch otp ' + secondary_otp }}"
+    register: result
+    failed_when: (result.stdout | from_json)['response']['result']['status'] != "Success"
+    when: secondary_otp|length > 0 
+  - name: Configure high-availability
+    panos_type_cmd:
+      provider:
+        ip_address: '{{ ip_address }}'
+        username: 'refarchadmin'
+        password: '{{ password }}'
+      xpath: | 
+          /config/devices/entry[@name="localhost.localdomain"]/deviceconfig/high-availability
+      element: |
+          <peer>
+            <ip-address>{{ peer }}</ip-address>
+          </peer>
+          <enabled>yes</enabled>
+          <election-option>
+            <priority>secondary</priority>
+          </election-option>
+
+- name: Commit
+  hosts: panorama
+  connection: local
+  gather_facts: False
+
+  collections:
+    - paloaltonetworks.panos
+
+  tasks:
+  - name: Commit candidate configuration
+    panos_commit:
+      provider:
+        ip_address: '{{ ip_address }}'
+        username: 'refarchadmin'
+        password: '{{ password }}'
+
+#  - pause: minutes=2 
+
+- name: High-availability sync
+  hosts: primary-panorama
+  connection: local
+  gather_facts: False
+
+  collections:
+    - paloaltonetworks.panos
+
+  tasks:
+  - name: Wait till HA state is ready
+    panos_op:
+      provider:
+        ip_address: '{{ ip_address }}'
+        username: 'refarchadmin'
+        password: '{{ password }}'
+      cmd: "show high-availability state"
+    register: result
+    until: result.stdout.find("not synchronized") != -1
+    retries: 6
+    delay: 10
+  - name: Sync HA configuration
+    panos_op: 
+      provider:
+        ip_address: '{{ ip_address }}'
+        username: 'refarchadmin'
+        password: '{{ password }}'
+      cmd: "request high-availability sync-to-remote running-config"
+    register: result
+#  - name: returned output in the default JSON format
+#    debug: msg='{{ result.stdout }}' 

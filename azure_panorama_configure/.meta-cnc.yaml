@@ -1,6 +1,6 @@
-name: Configure Panorama
+name: Configure Panorama on Azure
 
-label: Configure Panorama on AWS
+label: Configure Panorama on Azure
 
 description: |
   Configure Panorama with optional HA
@@ -9,17 +9,9 @@ type: python3
 
 labels:
   collection:
-    - AWS Reference Architecture Skillet Modules
+    - Azure Reference Architecture Skillet Modules
 
 variables:
-  - name: AWS_ACCESS_KEY_ID
-    description: ID
-    default:
-    type_hint: hidden
-  - name: AWS_SECRET_ACCESS_KEY
-    description: Secret
-    default:
-    type_hint: hidden
   - name: PASSWORD
     description: Password for the admin account
     default:

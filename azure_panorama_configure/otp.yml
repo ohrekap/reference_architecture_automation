@@ -1,0 +1,20 @@
+---
+- name: Panorama OTP
+  hosts: primary-panorama
+  connection: local
+  gather_facts: False
+
+  collections:
+    - paloaltonetworks.panos
+
+  tasks:
+  - name: Authorize plugin with OTP
+    panos_op: 
+      provider:
+        ip_address: '{{ ip_address }}'
+        username: 'refarchadmin'
+        password: '{{ password }}'
+      cmd: "{{'request plugins cloud_services panorama-certificate fetch otp ' + primary_otp }}"
+    register: result
+    when: primary_otp|length > 0
+    failed_when: (result.stdout | from_json)['response']['result']['status'] != "Success"

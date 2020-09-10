@@ -7,7 +7,7 @@ type: workflow
 
 labels:
   collection:
-    - Reference Architecture AWS Skillets
+    - AWS Reference Architecture AWS Skillets
 
 snippets:
   - name: Panorama on AWS

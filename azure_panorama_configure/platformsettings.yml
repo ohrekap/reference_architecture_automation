@@ -1,0 +1,98 @@
+---
+- name: Get Panorama up and running
+  hosts: panorama
+  connection: local
+  gather_facts: False
+
+  collections:
+    - paloaltonetworks.panos
+
+  tasks:
+  - name: Set Panorama's serial number so it can retrieve its licenses.
+    panos_op:
+      provider:
+        ip_address: '{{ ip_address }}'
+        username: 'refarchadmin'
+        password: '{{ password }}'
+      cmd: "{{'set serial-number ' + serialnumber }}"
+  - name: Set DNS and NTP
+    panos_mgtconfig:
+      provider:
+        ip_address: '{{ ip_address }}'
+        username: 'refarchadmin'
+        password: '{{ password }}'
+      dns_server_primary: "168.63.129.16"
+      ntp_server_primary: "0.pool.ntp.org"
+      ntp_server_secondary: "1.pool.ntp.org"
+      commit: True
+  - name: Request the license
+    panos_op:
+      provider:
+        ip_address: '{{ ip_address }}'
+        username: 'refarchadmin'
+        password: '{{ password }}'
+      cmd: "request license fetch"
+    register: result
+  - name: Update the list of plugins
+    panos_op:
+      provider:
+        ip_address: '{{ ip_address }}'
+        username: 'refarchadmin'
+        password: '{{ password }}'
+      cmd: "request plugins check"
+#    register: result
+  - name: Download the cloud services plugin
+    panos_op:
+      provider:
+        ip_address: '{{ ip_address }}'
+        username: 'refarchadmin'
+        password: '{{ password }}'
+      cmd: "request plugins download file cloud_services-1.6.0-h1"
+    register: result
+  #- name: Extract and show download job id
+  #  vars:
+  #    job_id: "{{ (result.stdout | from_json)['response']['result']['job'] }}"
+    #debug: msg='{{ job_id }}'
+  - name: Query the job id until it the download is finished
+    vars:
+      job_id: "{{ (result.stdout | from_json)['response']['result']['job'] }}"
+    panos_op:
+      provider:
+        ip_address: '{{ ip_address }}'
+        username: 'refarchadmin'
+        password: '{{ password }}'
+      cmd: "show jobs id \"{{ job_id }}\""
+    register: result
+    until: result.stdout.find("FIN") != -1
+    retries: 5
+    delay: 10
+  - name: Install the cloud services plugin
+    panos_op:
+      provider:
+        ip_address: '{{ ip_address }}'
+        username: 'refarchadmin'
+        password: '{{ password }}'
+      cmd: "request plugins install cloud_services-1.6.0-h1"
+    register: result
+    #retries: 3
+    #delay: 3
+    until: (result.stdout | from_json)['response']['@status']== "success"
+  #- name: returned output in the default JSON format
+  #  debug: msg='{{ result.stdout }}' 
+  #- name: Extract and show install job id
+  #  vars:
+  #    job_id: "{{ (result.stdout | from_json)['response']['result']['job'] }}"
+    #debug: msg='{{ job_id }}'
+  - name: Query the job id until it is finished
+    vars:
+      job_id: "{{ (result.stdout | from_json)['response']['result']['job'] }}"
+    panos_op:
+      provider:
+        ip_address: '{{ ip_address }}'
+        username: 'refarchadmin'
+        password: '{{ password }}'
+      cmd: "show jobs id \"{{ job_id }}\""
+    register: result
+    until: result.stdout.find("FIN") != -1
+    retries: 6
+    delay: 10
