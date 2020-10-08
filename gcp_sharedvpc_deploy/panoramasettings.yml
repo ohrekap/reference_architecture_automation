@@ -1,0 +1,22 @@
+---
+- name: Update Panorama for Bootstrapping
+  hosts: panorama
+  connection: local
+  gather_facts: False
+
+  collections:
+    - paloaltonetworks.panos
+
+  tasks:
+  - name: Genertate vm-auth-key
+    panos_op:
+      provider:
+        ip_address: '{{ ip_address }}'
+        password: '{{ password }}'
+      cmd: "request bootstrap vm-auth-key generate lifetime 8760"
+    register: result
+  - name: returned output in the default JSON format
+    vars:
+      key: "{{ (result.stdout | from_json)['response']['result'] }}"
+    #debug: msg='{{ key.split(" ")[3] | lower }}'
+    copy: content='{{ key.split(" ")[3] | lower }}' dest=key

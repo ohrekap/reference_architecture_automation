@@ -1,0 +1,6 @@
+[panorama]
+primary-panorama ip_address={{ p_ip }} serialnumber={{ p_serial }} peer={{ p_peer }}
+secondary-panorama ip_address={{ s_ip }} serialnumber={{ s_serial }} peer={{ s_peer }}
+
+[panorama:vars]
+ansible_python_interpreter=/usr/bin/python

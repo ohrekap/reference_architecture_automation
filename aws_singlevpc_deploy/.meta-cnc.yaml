@@ -1,6 +1,6 @@
 name: SinlgeVPC on AWS
 
-label: Deploy AWS Single VPC
+label: 4 - Deploy AWS Single VPC
 
 description: |
   Deploy the AWS Single VPC Design Model
@@ -8,6 +8,7 @@ description: |
 type: python3
 
 labels:
+  order: 4
   collection:
     - AWS Reference Architecture Skillet Modules
 

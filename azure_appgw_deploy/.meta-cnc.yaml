@@ -1,13 +1,14 @@
 name: Inbound AppGw on Azure
 
-label: Deploy Azure Inbound Security with an Application Gateway
+label: 6 - Deploy Azure Inbound Security with an Application Gateway
 
 description: |
-  Deploy Inbound security with an AppGW in the Azure Transit VNet Design Model
+  Ensure that the OBEW firewalls from the previous step are fully deployed (they show up in Panorama and are green) before deploying this step.
 
 type: python3
 
 labels:
+  order: 6
   collection:
     - Azure Reference Architecture Skillet Modules
 

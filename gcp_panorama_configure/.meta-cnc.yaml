@@ -1,6 +1,6 @@
-name: Configure Panorama on Azure
+name: Configure Panorama on GCP
 
-label: 4 - Configure Panorama
+label: 3 - Configure Panorama
 
 description: |
   Configure Panorama with optional HA
@@ -8,11 +8,15 @@ description: |
 type: python3
 
 labels:
-  order: 4
+  order: 3
   collection:
-    - Azure Reference Architecture Skillet Modules
+    - GCP Reference Architecture Skillet Modules
 
 variables:
+  - name: GOOGLE_CREDENTIALS
+    description: GCP Credentials
+    default: ""
+    type_hint: hidden
   - name: PASSWORD
     description: Password for the admin account
     default:

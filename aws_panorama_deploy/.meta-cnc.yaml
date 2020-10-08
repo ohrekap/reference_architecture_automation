@@ -1,6 +1,6 @@
 name: Panorama on AWS
 
-label: Deploy Panorama on AWS
+label: 1 - Deploy Panorama
 
 description: |
   Deploy Panorama with optional HA
@@ -8,6 +8,7 @@ description: |
 type: python3
 
 labels:
+  order: 1
   collection:
     - AWS Reference Architecture Skillet Modules
 

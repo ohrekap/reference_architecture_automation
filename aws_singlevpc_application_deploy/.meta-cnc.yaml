@@ -1,6 +1,6 @@
 name: Application on AWS
 
-label: Deploy an Example Application into the AWS Single VPC
+label: 5 - Deploy an Example Application into the AWS Single VPC
 
 description: |
   Deploy the Application
@@ -8,6 +8,7 @@ description: |
 type: python3
 
 labels:
+  order: 5
   collection:
     - AWS Reference Architecture Skillet Modules
 

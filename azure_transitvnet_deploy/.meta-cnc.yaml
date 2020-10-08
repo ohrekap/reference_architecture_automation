@@ -1,6 +1,6 @@
 name: TransitVNet on Azure
 
-label: Deploy Azure Transit VNet
+label: 5 - Deploy Azure Transit VNet and OBEW Firewalls
 
 description: |
   Deploy the Azure Transit VNet Design Model
@@ -8,6 +8,7 @@ description: |
 type: python3
 
 labels:
+  order: 5
   collection:
     - Azure Reference Architecture Skillet Modules
 

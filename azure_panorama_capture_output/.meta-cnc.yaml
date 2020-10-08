@@ -1,6 +1,6 @@
 name: Capture Output for IP in Azure
 
-label: Capture Panorama IP in Azure
+label: 3 - Capture Panorama IP
 
 description: |
   Capture the Panorama IP details from Terraform
@@ -8,6 +8,7 @@ description: |
 type: python3
 
 labels:
+  order: 3
   collection:
     - Azure Reference Architecture Skillet Modules
 

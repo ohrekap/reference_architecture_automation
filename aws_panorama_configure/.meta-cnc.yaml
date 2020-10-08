@@ -1,6 +1,6 @@
 name: Configure Panorama
 
-label: Configure Panorama on AWS
+label: 3 - Configure Panorama
 
 description: |
   Configure Panorama with optional HA
@@ -8,6 +8,7 @@ description: |
 type: python3
 
 labels:
+  order: 3
   collection:
     - AWS Reference Architecture Skillet Modules
 

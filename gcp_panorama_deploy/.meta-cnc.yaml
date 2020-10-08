@@ -1,0 +1,129 @@
+name: Panorama on GCP
+
+label: 1 - Deploy Panorama
+
+description: |
+  Deploy Panorama with optional HA
+
+type: python3
+
+labels:
+  order: 1
+  collection:
+    - GCP Reference Architecture Skillet Modules
+
+variables:
+  - name: DEPLOYMENT_NAME
+    description: Prefix for deployment
+    default: ""
+    type_hint: hidden
+  - name: GOOGLE_CREDENTIALS
+    description: GCP Credentials
+    default: ""
+    type_hint: hidden
+  - name: FOLDER
+    description: GCP Folder
+    default: ""
+    type_hint: hidden
+  - name: BILLING_ACCOUNT
+    description: GCP Billing Account
+    default: ""
+    type_hint: hidden
+  - name: PASSWORD
+    description: Admin Password
+    type_hint: hidden
+  - name: GCP_REGION
+    description: What GCP region do you want to deploy into?
+    type_hint: dropdown
+    dd_list:
+      - key: 'us-central1 - Council Bluffs, Iowa, USA'
+        value: 'us-central1'
+      - key: 'us-east1 - Moncks Corner, South Carolina, USA'
+        value: 'us-east1'
+      - key: 'us-east4 - Ashburn, Northern Virginia, USA'
+        value: 'us-east4'
+      - key: 'us-west1 - The Dalles, Oregon, USA'
+        value: 'us-west1'
+      - key: 'us-west2 - Los Angeles, California, USA'
+        value: 'us-west2'
+      - key: 'us-west3 - Salt Lake City, Utah, USA'
+        value: 'us-west3'
+      - key: 'us-west4 - Las Vegas, Nevada, USA'
+        value: 'us-west4'
+      - key: 'northamerica-northeast1 - Montréal, Québec, Canada'
+        value: 'northamerica-northeast1'
+      - key: 'southamerica-east1 - Osasco (São Paulo), Brazil'
+        value: 'southamerica-east1'
+      - key: 'europe-north1 - Hamina, Finland'
+        value: 'europe-north1'
+      - key: 'europe-west1 - St. Ghislain, Belgium'
+        value: 'europe-west1'
+      - key: 'europe-west2 - London, England, UK'
+        value: 'europe-west2'
+      - key: 'europe-west3 -  Frankfurt, Germany'
+        value: 'europe-west3'
+      - key: 'europe-west4 - Eemshaven, Netherlands'
+        value: 'europe-west4'
+      - key: 'europe-west6 - Zürich, Switzerland'
+        value: 'europe-west6'
+      - key: 'asia-east1 - Changhua County, Taiwan'
+        value: 'asia-east1'
+      - key: 'asia-east2 - Hong Kong'
+        value: 'asia-east2'
+      - key: 'asia-northeast1 - Tokyo, Japan'
+        value: 'asia-northeast1'
+      - key: 'asia-northeast2 - Osaka, Japan'
+        value: 'asia-northeast2'
+      - key: 'asia-northeast3 - Seoul, South Korea'
+        value: 'asia-northeast3'
+      - key: 'asia-south1 - Mumbai, India'
+        value: 'asia-south1'
+      - key: 'asia-southeast1 - Jurong West, Singapore'
+        value: 'asia-southeast1'
+      - key: 'asia-southeast2 - Jakarta, Indonesia'
+        value: 'asia-southeast2'
+      - key: 'australia-southeast1 - Sydney, Australia'
+        value: 'australia-southeast1'
+  - name: vpc_cidr_block
+    description: CIDR block for the Management VNet. Code supports a /16 mask through /29
+    default: 10.255.0.0/16
+    type_hint: cidr
+  - name: specify_network
+    description: Do you want to define the network you will access Panorama from manually?
+    type_hint: dropdown
+    dd_list:
+      - key: 'No: auto-discover my IP address'
+        value: 'auto'
+      - key: 'Yes: define the network and mask manually'
+        value: 'manual'
+  - name: onprem_cidr_block
+    description: The network and mask (ex:/24) you will access Panorama from
+    tyoe_hint: cidr
+    toggle_hint:
+      source: specify_network
+      value: 'manual' 
+  - name: enable_ha
+    description: High-availability deployment option
+    type_hint: dropdown
+    dd_list:
+      - key: A single Panorama
+        value: 'false'
+      - key: A high-availability pair
+        value: 'true'
+  - name: Init
+    description: Deploy or destroy the environment
+    default: ip_address
+    type_hint: dropdown
+    dd_list:
+      - key: 'Deploy'
+        value: "apply"
+      - key: 'Destroy'
+        value: 'destroy'
+
+snippets:
+  - name: script
+    file: deploy_panorama.py
+    input_type: env
+
+
+

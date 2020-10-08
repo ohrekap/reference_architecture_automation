@@ -1,26 +1,22 @@
-name: Capture Output for IP
+name: Capture Output for IP on GCP
 
 label: 2 - Capture Panorama IP
 
 description: |
-  Capture the Panorama IP details from Terraform
+  Capture the Panorama IP details from Terraform so following steps have the information available
 
 type: python3
 
 labels:
   order: 2
   collection:
-    - AWS Reference Architecture Skillet Modules
+    - GCP Reference Architecture Skillet Modules
 
 # These two hidden variables are passed to the Python script and ultimately to Terraform
 variables:
-  - name: AWS_ACCESS_KEY_ID
-    description: ID
-    default:
-    type_hint: hidden
-  - name: AWS_SECRET_ACCESS_KEY
-    description: Secret
-    default:
+  - name: GOOGLE_CREDENTIALS
+    description: GCP Credentials
+    default: ""
     type_hint: hidden
 
 # This uses output capturing to get values from the output and set them in the users session. Each subsequent skillet

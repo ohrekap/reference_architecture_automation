@@ -9,6 +9,12 @@
 pub
 id_rsa
 
+# Panorama bootstrap keys
+key
+
+#GCP Credentials
+gcloud
+
 # Ansible inventory
 inventory.yml
 

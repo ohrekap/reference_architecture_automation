@@ -1,5 +1,5 @@
 name: azure_login
-label: Azure Login (Pre-Deployment Step)
+label: 1 - Azure Login (Pre-Deployment Step)
 
 description: |
   This skillet will log into Azure. You will be prompted to follow a link and enter a device-code in your browser.
@@ -14,6 +14,7 @@ extends:
 
 # Labels allow grouping and type specific options and are generally only used in advanced cases
 labels:
+  order: 1
   collection: Azure Reference Architecture Skillet Modules
 
 # variables define the things an operator may customize in this skillet. Things like DNS servers, NTP addresses, etc
