@@ -33,13 +33,18 @@ Next, enter a password for the deployment to assign the admin user.
 
 11. In the **Key** box, enter **PASSWORD**.
 12. In the **Value** box, enter the password you want Panorama and the VM-Series admin user to have.
-13. Click **Load**.
+
+Optionally, enter a prefix to be used in the deployment. Prefixing a name to the deployment helps avoid problems. Many resources require a unique name. 
+
+13. In the **Key** box, enter **DEPLOYMENT_NAME**.
+14. In the **Value** box, enter the name to prefix to the resources.
+15. Click **Load**.
 
 Next, deploy Panorama.
 
-14. Navigate to **PanHandler > Skillet Collections > Azure Reference Architecture Skillet Modules > 1 - Azure Login (Pre-Deployment Step) > Go**.
+16. Navigate to **PanHandler > Skillet Collections > Azure Reference Architecture Skillet Modules > 1 - Azure Login (Pre-Deployment Step) > Go**.
 
-15. After each module is complete, deploy the next module in the list. 
+17. After each module is complete, deploy the next module in the list. 
 
 ## If you are deploying to AWS
 
