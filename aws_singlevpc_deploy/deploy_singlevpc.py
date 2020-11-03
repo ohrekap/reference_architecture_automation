@@ -19,6 +19,10 @@ variables = dict(AWS_ACCESS_KEY_ID=os.environ.get('AWS_ACCESS_KEY_ID'), PANOS_PA
 variables.update(TF_VAR_deployment_name=os.environ.get('DEPLOYMENT_NAME'), TF_VAR_vpc_cidr_block=os.environ.get(
                 'singlevpc_cidr_block'), TF_VAR_aws_region=os.environ.get('AWS_REGION'), TF_VAR_authcode=os.environ.get('authcode'),
                 TF_VAR_vpn_peer=os.environ.get('vpn_peer'), TF_VAR_vpn_as=os.environ.get('vpn_as'), TF_VAR_vpn_psk=os.environ.get('vpn_psk'))
+
+if os.environ.get('AWS_SESSION_TOKEN') != "":
+    variables.update(AWS_SESSION_TOKEN=os.environ.get('AWS_SESSION_TOKEN'))
+
 # A variable the defines if we are creating or destroying the environment via terraform. Set in the dropdown
 # on Panhandler.
 tfcommand = (os.environ.get('Init'))
@@ -56,7 +60,7 @@ with open("inventory.yml", "w") as fh:
 if tfcommand == 'apply':
 
     if os.path.exists('key') is not True:
-        container = client.containers.run('tjschuler/pan-ansible', "ansible-playbook panoramasettings.yml -e "+ansible_variables+" -i inventory.yml", auto_remove=True, volumes_from=socket.gethostname(), working_dir=os.getcwd(), detach=True)
+        container = client.containers.run('paloaltonetworks/pan-ansible', "ansible-playbook panoramasettings.yml -e "+ansible_variables+" -i inventory.yml", auto_remove=True, volumes_from=socket.gethostname(), working_dir=os.getcwd(), detach=True)
     # Monitor the log so that the user can see the console output during the run versus waiting until it is complete.
     # The container stops and is removed once the run is complete and this loop will exit at that time.
         for line in container.logs(stream=True):
@@ -68,7 +72,7 @@ if tfcommand == 'apply':
 
     # Init terraform with the modules and providers. The continer will have the some volumes as Panhandler.
     # This allows it to access the files Panhandler downloaded from the GIT repo.
-    container = client.containers.run('hashicorp/terraform:light', 'init -no-color -input=false', auto_remove=True,
+    container = client.containers.run('hashicorp/terraform:0.12.29', 'init -no-color -input=false', auto_remove=True,
                                       volumes_from=socket.gethostname(), working_dir=wdir,
                                       environment=variables, detach=True)
     # Monitor the log so that the user can see the console output during the run versus waiting until it is complete.
@@ -76,8 +80,7 @@ if tfcommand == 'apply':
     for line in container.logs(stream=True):
         print(line.decode('utf-8').strip())
     # Run terraform apply
-    print(variables)
-    container = client.containers.run('hashicorp/terraform:light', 'apply -auto-approve -no-color -input=false',
+    container = client.containers.run('hashicorp/terraform:0.12.29', 'apply -auto-approve -no-color -input=false',
                                       auto_remove=True, volumes_from=socket.gethostname(), working_dir=wdir,
                                       environment=variables, detach=True)
     # Monitor the log so that the user can see the console output during the run versus waiting until it is complete.
@@ -85,7 +88,7 @@ if tfcommand == 'apply':
     for line in container.logs(stream=True):
         print(line.decode('utf-8').strip())
 
-    container = client.containers.run('tjschuler/pan-ansible', "ansible-playbook commit.yml -e "+ansible_variables+" -i inventory.yml", auto_remove=True, volumes_from=socket.gethostname(), working_dir=os.getcwd(), detach=True)
+    container = client.containers.run('paloaltonetworks/pan-ansible', "ansible-playbook commit.yml -e "+ansible_variables+" -i inventory.yml", auto_remove=True, volumes_from=socket.gethostname(), working_dir=os.getcwd(), detach=True)
     # Monitor the log so that the user can see the console output during the run versus waiting until it is complete.
     # The container stops and is removed once the run is complete and this loop will exit at that time.
     for line in container.logs(stream=True):
@@ -100,7 +103,7 @@ elif tfcommand == 'destroy':
         variables.update(TF_VAR_panorama_bootstrap_key=" ")
     # Add the boostrap key to the variables sent to Terraform so it can create the AWS key pair.
 
-    container = client.containers.run('hashicorp/terraform:light', 'destroy -auto-approve -no-color -input=false',
+    container = client.containers.run('hashicorp/terraform:0.12.29', 'destroy -auto-approve -no-color -input=false',
                                       auto_remove=True, volumes_from=socket.gethostname(), working_dir=wdir,
                                       environment=variables, detach=True)
     # Monitor the log so that the user can see the console output during the run versus waiting until it is complete.
@@ -109,7 +112,7 @@ elif tfcommand == 'destroy':
         print(line.decode('utf-8').strip())
     # Remove the SSH keys we used to provision Panorama from the container.
 
-    container = client.containers.run('tjschuler/pan-ansible', "ansible-playbook commit.yml -e "+ansible_variables+" -i inventory.yml", auto_remove=True, volumes_from=socket.gethostname(), working_dir=os.getcwd(), detach=True)
+    container = client.containers.run('paloaltonetworks/pan-ansible', "ansible-playbook commit.yml -e "+ansible_variables+" -i inventory.yml", auto_remove=True, volumes_from=socket.gethostname(), working_dir=os.getcwd(), detach=True)
     for line in container.logs(stream=True):
         print(line.decode('utf-8').strip())
 

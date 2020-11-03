@@ -167,8 +167,16 @@ resource "azurerm_subnet_network_security_group_association" "private" {
   network_security_group_id = azurerm_network_security_group.inboundAllowAll.id
 }
 
+resource "random_string" "randomstring" {
+  length      = 6
+  min_lower   = 2
+  min_numeric = 3
+  upper       = false
+  special     = false
+}
+
 resource "azurerm_storage_account" "this" {
-  name                     = "transitv2vmseries"
+  name                     = join("", list("transitv2vmseries", random_string.randomstring.result))
   resource_group_name      = azurerm_resource_group.this.name
   location                 = azurerm_resource_group.this.location
   account_tier             = "Standard"

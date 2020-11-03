@@ -15,8 +15,8 @@ path = Path(os.getcwd())
 wdir = str(path.parents[0])+"/terraform/azure/panorama/"
 
 # Capture the External IP address of Panorama from the Terraform output
-eip = json.loads(client.containers.run('zenika/terraform-azure-cli:release-4.6_terraform-0.12.28_azcli-2.10.1', 'terraform output -json -no-color', auto_remove=True,
-                                       volumes={'azurecli': {'bind': '/root/.azure/', 'mode': 'rw'}},
+eip = json.loads(client.containers.run('paloaltonetworks/terraform-azure', 'terraform output -json -no-color', auto_remove=True,
+                                       volumes={'terraform-azure': {'bind': '/home/terraform/.azure/', 'mode': 'rw'}},
                                        volumes_from=socket.gethostname(), working_dir=wdir, environment=variables).decode('utf-8'))
 panorama_ip = (eip['primary_eip']['value'])
 panorama_private_ip = (eip['primary_private_ip']['value'])

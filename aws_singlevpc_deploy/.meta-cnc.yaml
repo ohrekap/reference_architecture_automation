@@ -1,4 +1,4 @@
-name: SinlgeVPC on AWS
+name: SingleVPC on AWS
 
 label: 4 - Deploy AWS Single VPC
 
@@ -15,11 +15,15 @@ labels:
 variables:
   - name: AWS_ACCESS_KEY_ID
     description: ID
-    default: 
+    default: null
     type_hint: hidden
   - name: AWS_SECRET_ACCESS_KEY
     description: Secret
-    default:
+    default: null
+    type_hint: hidden
+  - name: AWS_SESSION_TOKEN
+    description: AWS Session Token - Optional
+    default: null
     type_hint: hidden
   - name: DEPLOYMENT_NAME
     description: Prefix for deployment

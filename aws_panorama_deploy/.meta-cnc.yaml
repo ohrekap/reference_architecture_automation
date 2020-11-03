@@ -1,116 +1,112 @@
 name: Panorama on AWS
-
 label: 1 - Deploy Panorama
-
 description: |
-  Deploy Panorama with optional HA
-
+    Deploy Panorama with optional HA
 type: python3
-
 labels:
-  order: 1
-  collection:
+    order: 1
+    collection:
     - AWS Reference Architecture Skillet Modules
-
 variables:
-  - name: AWS_ACCESS_KEY_ID
-    description: ID
-    default: 
+-   name: AWS_ACCESS_KEY_ID
+    description: AWS Access Key ID
+    default: null
     type_hint: hidden
-  - name: AWS_SECRET_ACCESS_KEY
-    description: Secret
-    default:
+-   name: AWS_SECRET_ACCESS_KEY
+    description: AWS Secret Access Key
+    default: null
     type_hint: hidden
-  - name: DEPLOYMENT_NAME
+-   name: AWS_SESSION_TOKEN
+    description: AWS Session Token - Optional
+    default: null
+    type_hint: hidden
+-   name: DEPLOYMENT_NAME
     description: Prefix for deployment
-    default: ""
+    default: ''
     type_hint: hidden
-  - name: AWS_REGION
+-   name: AWS_REGION
     description: What AWS region do you want to deploy into?
     type_hint: dropdown
     dd_list:
-      - key: 'US East (Ohio)'
-        value: 'us-east-2'
-      - key: 'US East (N. Virginia)'
-        value: 'us-east-1'
-      - key: 'US West (N. California)'
-        value: 'us-west-1'
-      - key: 'US West (Oregon)'
-        value: 'us-west-2'
-      - key: 'Canada (Central)'
-        value: 'ca-central-1'
-      - key: 'Asia Pacific (Hong Kong)'
-        value: 'ap-east-1'
-      - key: 'Asia Pacific (Mumbai)'
-        value: 'ap-south-1'
-      - key: 'Asia Pacific (Osaka-Local)'
-        value: 'ap-northeast-3'
-      - key: 'Asia Pacific (Seoul)'
-        value: 'ap-northeast-2'
-      - key: 'Asia Pacific (Singapore)'
-        value: 'ap-southeast-1'
-      - key: 'Asia Pacific (Sydney)'
-        value: 'ap-southeast-2'
-      - key: 'Asia Pacific (Tokyo)'
-        value: 'ap-northeast-1'
-      - key: 'China (Beijing)'
-        value: 'cn-north-1'
-      - key: 'China (Ningxia)'
-        value: 'cn-northwest-1'
-      - key: 'Europe (Frankfurt)'
-        value: 'eu-central-1'
-      - key: 'Europe (Ireland)'
-        value: 'eu-west-1'
-      - key: 'Europe (London)'
-        value: 'eu-west-2'
-      - key: 'Europe (Paris)'
-        value: 'eu-west-3'
-      - key: 'Europe (Stockholm)'
-        value: 'eu-north-1'
-      - key: 'Middle East (Bahrain)'
-        value: 'me-south-1'
-      - key: 'South America (Sao Paulo)'
-        value: 'sa-east-1'
-  - name: vpc_cidr_block
-    description: CIDR block for the Management VPC. Code supports a /16 mask through /29
+    -   key: US East (Ohio)
+        value: us-east-2
+    -   key: US East (N. Virginia)
+        value: us-east-1
+    -   key: US West (N. California)
+        value: us-west-1
+    -   key: US West (Oregon)
+        value: us-west-2
+    -   key: Canada (Central)
+        value: ca-central-1
+    -   key: Asia Pacific (Hong Kong)
+        value: ap-east-1
+    -   key: Asia Pacific (Mumbai)
+        value: ap-south-1
+    -   key: Asia Pacific (Osaka-Local)
+        value: ap-northeast-3
+    -   key: Asia Pacific (Seoul)
+        value: ap-northeast-2
+    -   key: Asia Pacific (Singapore)
+        value: ap-southeast-1
+    -   key: Asia Pacific (Sydney)
+        value: ap-southeast-2
+    -   key: Asia Pacific (Tokyo)
+        value: ap-northeast-1
+    -   key: China (Beijing)
+        value: cn-north-1
+    -   key: China (Ningxia)
+        value: cn-northwest-1
+    -   key: Europe (Frankfurt)
+        value: eu-central-1
+    -   key: Europe (Ireland)
+        value: eu-west-1
+    -   key: Europe (London)
+        value: eu-west-2
+    -   key: Europe (Paris)
+        value: eu-west-3
+    -   key: Europe (Stockholm)
+        value: eu-north-1
+    -   key: Middle East (Bahrain)
+        value: me-south-1
+    -   key: South America (Sao Paulo)
+        value: sa-east-1
+-   name: vpc_cidr_block
+    description: CIDR block for the Management VPC. Code supports a /16 mask through
+        /29
     default: 10.255.0.0/16
     type_hint: cidr
-  - name: specify_network
+-   name: specify_network
     description: Do you want to define the network you will access Panorama from manually?
     type_hint: dropdown
     dd_list:
-      - key: 'No: auto-discover my IP address'
-        value: 'auto'
-      - key: 'Yes: define the network and mask manually'
-        value: 'manual'
-  - name: onprem_cidr_block
+    -   key: 'No: auto-discover my IP address'
+        value: auto
+    -   key: 'Yes: define the network and mask manually'
+        value: manual
+-   name: onprem_cidr_block
     description: The network and mask (ex:/24) you will access Panorama from
     tyoe_hint: cidr
     toggle_hint:
-      source: specify_network
-      value: 'manual' 
-  - name: enable_ha
+        source: specify_network
+        value: manual
+-   name: enable_ha
     description: High-availability deployment option
     type_hint: dropdown
     dd_list:
-      - key: A single Panorama
+    -   key: A single Panorama
         value: 'false'
-      - key: A high-availability pair
+    -   key: A high-availability pair
         value: 'true'
-  - name: Init
+-   name: Init
     description: Deploy or destroy the environment
     default: ip_address
     type_hint: dropdown
     dd_list:
-      - key: 'Deploy'
-        value: "apply"
-      - key: 'Destroy'
-        value: 'destroy'
-
+    -   key: Deploy
+        value: apply
+    -   key: Destroy
+        value: destroy
 snippets:
-  - name: script
+-   name: script
     file: deploy_panorama.py
     input_type: env
-
-
-

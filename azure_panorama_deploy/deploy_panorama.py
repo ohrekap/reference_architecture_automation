@@ -53,8 +53,8 @@ client = DockerClient()
 
 # If the variable is set to apply then create the environment and check for Panorama availabliity
 if tfcommand == 'apply':
-    container = client.containers.run('zenika/terraform-azure-cli:release-4.6_terraform-0.12.28_azcli-2.10.1', 'az account list', auto_remove=True,
-                                      volumes={'azurecli': {'bind': '/root/.azure/', 'mode': 'rw'}},
+    container = client.containers.run('paloaltonetworks/terraform-azure', 'az account list', auto_remove=True,
+                                      volumes={'terraform-azure': {'bind': '/home/terraform/.azure/', 'mode': 'rw'}},
                                       volumes_from=socket.gethostname(), working_dir=wdir,
                                       environment=variables, detach=True)
     # Monitor the log so that the user can see the console output during the run versus waiting until it is complete.
@@ -64,8 +64,8 @@ if tfcommand == 'apply':
 
     # Init terraform with the modules and providers. The continer will have the some volumes as Panhandler.
     # This allows it to access the files Panhandler downloaded from the GIT repo.
-    container = client.containers.run('zenika/terraform-azure-cli:release-4.6_terraform-0.12.28_azcli-2.10.1', 'terraform init -no-color -input=false', auto_remove=True,
-                                      volumes={'azurecli': {'bind': '/root/.azure/', 'mode': 'rw'}},
+    container = client.containers.run('paloaltonetworks/terraform-azure', 'terraform init -no-color -input=false', auto_remove=True,
+                                      volumes={'terraform-azure': {'bind': '/home/terraform/.azure/', 'mode': 'rw'}},
                                       volumes_from=socket.gethostname(), working_dir=wdir,
                                       environment=variables, detach=True)
     # Monitor the log so that the user can see the console output during the run versus waiting until it is complete.
@@ -73,8 +73,8 @@ if tfcommand == 'apply':
     for line in container.logs(stream=True):
         print(line.decode('utf-8').strip())
     # Run terraform apply
-    container = client.containers.run('zenika/terraform-azure-cli:release-4.6_terraform-0.12.28_azcli-2.10.1', 'terraform apply -auto-approve -no-color -input=false',
-                                      volumes={'azurecli': {'bind': '/root/.azure/', 'mode': 'rw'}},
+    container = client.containers.run('paloaltonetworks/terraform-azure', 'terraform apply -auto-approve -no-color -input=false',
+                                      volumes={'terraform-azure': {'bind': '/home/terraform/.azure/', 'mode': 'rw'}},
                                       auto_remove=True, volumes_from=socket.gethostname(), working_dir=wdir,
                                       environment=variables, detach=True)
     # Monitor the log so that the user can see the console output during the run versus waiting until it is complete.
@@ -83,11 +83,15 @@ if tfcommand == 'apply':
         print(line.decode('utf-8').strip())
 
     # Capture the IP addresses of Panorama using Terraform output
-    eip = json.loads(client.containers.run('zenika/terraform-azure-cli:release-4.6_terraform-0.12.28_azcli-2.10.1', 'terraform output -json -no-color', auto_remove=True,
-                                           volumes={'azurecli': {'bind': '/root/.azure/', 'mode': 'rw'}},
+    eip = json.loads(client.containers.run('paloaltonetworks/terraform-azure', 'terraform output -json -no-color', auto_remove=True,
+                                           volumes={'terraform-azure': {'bind': '/home/terraform/.azure/', 'mode': 'rw'}},
                                            volumes_from=socket.gethostname(), working_dir=wdir,
                                            environment=variables).decode('utf-8'))
-    panorama_ip = (eip['primary_eip']['value'])
+    try:
+        panorama_ip = (eip['primary_eip']['value'])
+    except Exception:
+        print('Error: Unable to capture Panorama\'s IP address')
+        sys.exit(1)
 
     # Inform the user of Panorama's external IP address
     print('')
@@ -152,8 +156,8 @@ if tfcommand == 'apply':
 
 # If the variable is destroy, then destroy the environment and remove the SSH keys.
 elif tfcommand == 'destroy':
-    container = client.containers.run('zenika/terraform-azure-cli:release-4.6_terraform-0.12.28_azcli-2.10.1', 'terraform destroy -auto-approve -no-color -input=false',
-                                      volumes={'azurecli': {'bind': '/root/.azure/', 'mode': 'rw'}},
+    container = client.containers.run('paloaltonetworks/terraform-azure', 'terraform destroy -auto-approve -no-color -input=false',
+                                      volumes={'terraform-azure': {'bind': '/home/terraform/.azure/', 'mode': 'rw'}},
                                       auto_remove=True, volumes_from=socket.gethostname(), working_dir=wdir,
                                       environment=variables, detach=True)
     # Monitor the log so that the user can see the console output during the run versus waiting until it is complete.

@@ -24,6 +24,9 @@ def convert(seconds):
     hour, min = divmod(min, 60)
     return '%d:%02d:%02d' % (hour, min, sec)
 
+# for k, v in sorted(os.environ.items()):
+#    print(k+':', v)
+# print('\n')
 
 # Pull in the AWS Provider variables. These are set in the Skillet Environment and are hidden variables so the
 # user doesn't need to adjust them everytime.
@@ -32,6 +35,9 @@ variables = dict(AWS_ACCESS_KEY_ID=os.environ.get('AWS_ACCESS_KEY_ID'),
 variables.update(TF_VAR_deployment_name=os.environ.get('DEPLOYMENT_NAME'), TF_VAR_vpc_cidr_block=os.environ.get(
                 'vpc_cidr_block'), TF_VAR_enable_ha=os.environ.get('enable_ha'),
                 TF_VAR_aws_region=os.environ.get('AWS_REGION'))
+
+if os.environ.get('AWS_SESSION_TOKEN') != "":
+    variables.update(AWS_SESSION_TOKEN=os.environ.get('AWS_SESSION_TOKEN'))
 # A variable the defines if we are creating or destroying the environment via terraform. Set in the dropdown
 # on Panhandler.
 tfcommand = (os.environ.get('Init'))
@@ -87,7 +93,7 @@ if tfcommand == 'apply':
 
     # Init terraform with the modules and providers. The continer will have the some volumes as Panhandler.
     # This allows it to access the files Panhandler downloaded from the GIT repo.
-    container = client.containers.run('hashicorp/terraform:light', 'init -no-color -input=false', auto_remove=True,
+    container = client.containers.run('hashicorp/terraform:0.12.29', 'init -no-color -input=false', auto_remove=True,
                                       volumes_from=socket.gethostname(), working_dir=wdir,
                                       environment=variables, detach=True)
     # Monitor the log so that the user can see the console output during the run versus waiting until it is complete.
@@ -95,7 +101,7 @@ if tfcommand == 'apply':
     for line in container.logs(stream=True):
         print(line.decode('utf-8').strip())
     # Run terraform apply
-    container = client.containers.run('hashicorp/terraform:light', 'apply -auto-approve -no-color -input=false',
+    container = client.containers.run('hashicorp/terraform:0.12.29', 'apply -auto-approve -no-color -input=false',
                                       auto_remove=True, volumes_from=socket.gethostname(), working_dir=wdir,
                                       environment=variables, detach=True)
     # Monitor the log so that the user can see the console output during the run versus waiting until it is complete.
@@ -104,10 +110,14 @@ if tfcommand == 'apply':
         print(line.decode('utf-8').strip())
 
     # Capture the IP addresses of Panorama using Terraform output
-    eip = json.loads(client.containers.run('hashicorp/terraform:light', 'output -json -no-color', auto_remove=True,
+    eip = json.loads(client.containers.run('hashicorp/terraform:0.12.29', 'output -json -no-color', auto_remove=True,
                                            volumes_from=socket.gethostname(), working_dir=wdir,
                                            environment=variables).decode('utf-8'))
-    panorama_ip = (eip['primary_eip']['value'])
+    try:
+        panorama_ip = (eip['primary_eip']['value'])
+    except Exception:
+        print('Error: Unable to capture Panorama\'s IP address')
+        sys.exit(1)
 
     # Inform the user of Panorama's external IP address
     print('')
@@ -172,7 +182,7 @@ if tfcommand == 'apply':
 
 # If the variable is destroy, then destroy the environment and remove the SSH keys.
 elif tfcommand == 'destroy':
-    container = client.containers.run('hashicorp/terraform:light', 'destroy -auto-approve -no-color -input=false',
+    container = client.containers.run('hashicorp/terraform:0.12.29', 'destroy -auto-approve -no-color -input=false',
                                       auto_remove=True, volumes_from=socket.gethostname(), working_dir=wdir,
                                       environment=variables, detach=True)
     # Monitor the log so that the user can see the console output during the run versus waiting until it is complete.

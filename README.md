@@ -60,16 +60,18 @@ Next, create the authentication key pairs.
 10. In the **Value** box, enter your AWS access key.
 11. In the **Key** box, enter **AWS_SECRET_ACCESS_KEY**.
 12. In the **Value** box, enter your AWS secret.
+13. Optionally, If you are using SSO, in the **Key** box, enter **AWS_SESSION_TOKEN**.
+14. In the **Value** box, enter your AWS session token.
 
 Next, enter a password for the deployment to assign the admin user.
 
-13. In the **Key** box, enter **PASSWORD**.
-14. In the **Value** box, enter the password you want Panorama and the VM-Series admin user to have.
-15. Click **Load**.
+15. In the **Key** box, enter **PASSWORD**.
+16. In the **Value** box, enter the password you want Panorama and the VM-Series admin user to have.
+17. Click **Load**.
 
 Next, deploy Panorama.
 
-16. Navigate to **PanHandler > Skillet Collections > AWS Reference Architecture Skillet Modules > 1 - Deploy Panorama > Go**.
+18. Navigate to **PanHandler > Skillet Collections > AWS Reference Architecture Skillet Modules > 1 - Deploy Panorama > Go**.
 
 After each module is complete, deploy the next module in the list. 
 

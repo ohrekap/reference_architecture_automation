@@ -71,7 +71,7 @@ if tfcommand == 'apply':
     with open("inventory.yml", "w") as fh:
         fh.write(primary_inventory)
 
-    bootstrap_key = open('key', 'r')
+    bootstrap_key = open(str(path.parents[0])+'/gcp_sharedvpc_deploy/key', 'r')
     # Add the boostrap key to the variables sent to Terraform.
     variables.update(TF_VAR_panorama_bootstrap_key=bootstrap_key.read())
 
@@ -85,7 +85,7 @@ if tfcommand == 'apply':
 
     # Init terraform with the modules and providers. The continer will have the some volumes as Panhandler.
     # This allows it to access the files Panhandler downloaded from the GIT repo.
-    container = client.containers.run('tjschuler/terraform-gcloud', 'terraform init -no-color -input=false', auto_remove=True,
+    container = client.containers.run('paloaltonetworks/terraform-gcloud', 'terraform init -no-color -input=false', auto_remove=True,
                                       volumes_from=socket.gethostname(), working_dir=wdir,
                                       environment=variables, detach=True)
     # Monitor the log so that the user can see the console output during the run versus waiting until it is complete.
@@ -93,7 +93,7 @@ if tfcommand == 'apply':
     for line in container.logs(stream=True):
         print(line.decode('utf-8').strip())
     # Run terraform apply
-    container = client.containers.run('tjschuler/terraform-gcloud', 'terraform apply -auto-approve -no-color -input=false',
+    container = client.containers.run('paloaltonetworks/terraform-gcloud', 'terraform apply -auto-approve -no-color -input=false',
                                       auto_remove=True, volumes_from=socket.gethostname(), working_dir=wdir,
                                       environment=variables, detach=True)
     # Monitor the log so that the user can see the console output during the run versus waiting until it is complete.
@@ -101,7 +101,7 @@ if tfcommand == 'apply':
     for line in container.logs(stream=True):
         print(line.decode('utf-8').strip())
 
-    container = client.containers.run('tjschuler/pan-ansible', "ansible-playbook commit.yml -e "+ansible_variables+" -i inventory.yml", auto_remove=True, volumes_from=socket.gethostname(), working_dir=os.getcwd(), detach=True)
+    container = client.containers.run('paloaltonetworks/pan-ansible', "ansible-playbook commit.yml -e "+ansible_variables+" -i inventory.yml", auto_remove=True, volumes_from=socket.gethostname(), working_dir=os.getcwd(), detach=True)
     # Monitor the log so that the user can see the console output during the run versus waiting until it is complete.
     # The container stops and is removed once the run is complete and this loop will exit at that time.
     for line in container.logs(stream=True):
@@ -111,7 +111,7 @@ if tfcommand == 'apply':
 elif tfcommand == 'destroy':
     variables.update(GOOGLE_APPLICATION_CREDENTIALS=shared_wdir+'gcloud')
     variables.update(TF_VAR_ra_key="")
-    container = client.containers.run('tjschuler/terraform-gcloud', 'terraform destroy -auto-approve -no-color -input=false',
+    container = client.containers.run('paloaltonetworks/terraform-gcloud', 'terraform destroy -auto-approve -no-color -input=false',
                                       auto_remove=True, volumes_from=socket.gethostname(), working_dir=wdir,
                                       environment=variables, detach=True)
     # Monitor the log so that the user can see the console output during the run versus waiting until it is complete.
